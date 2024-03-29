@@ -6,12 +6,27 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log('hello from the middleware 🖐');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 const getAllTours = (req, res) => {
-  res.status(200).json({ status: 200, results: tours.length, data: { tours } });
+  res.status(200).json({
+    status: 200,
+    requestedAt: req.requestTime,
+    results: tours.length,
+    data: { tours },
+  });
 };
 
 const getTour = (req, res) => {
@@ -77,6 +92,7 @@ const deleteTour = (req, res) => {
 // app.delete('/api/v1/tours/:id', deleteTour);
 
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
 app
   .route('/api/v1/tours/:id')
   .get(getTour)
