@@ -4,6 +4,20 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is: ${val}`);
+  const id = Number(val);
+  const tour = tours.find((el) => el.id === id);
+
+  if (!tour) {
+    return res
+      .status(404)
+      .json({ status: 'not-found', message: 'ID not found.' });
+  }
+
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 200,
@@ -16,12 +30,6 @@ exports.getAllTours = (req, res) => {
 exports.getTour = (req, res) => {
   const id = Number(req.params.id);
   const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res
-      .status(404)
-      .json({ status: 'not-found', message: 'ID not found.' });
-  }
 
   res.status(200).json({ status: 200, data: { tour } });
 };
@@ -42,29 +50,11 @@ exports.createTour = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  const id = Number(req.params.id);
-  const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res
-      .status(404)
-      .json({ status: 'not-found', message: 'ID not found.' });
-  }
-
   res
     .status(200)
     .json({ status: 'success', data: { tour: '<Updated tour here...>' } });
 };
 
 exports.deleteTour = (req, res) => {
-  const id = Number(req.params.id);
-  const tour = tours.find((el) => el.id === id);
-
-  if (!tour) {
-    return res
-      .status(404)
-      .json({ status: 'not-found', message: 'ID not found.' });
-  }
-
   res.status(204).json({ status: 'success', data: null });
 };
